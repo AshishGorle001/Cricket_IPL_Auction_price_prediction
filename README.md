@@ -46,9 +46,11 @@ Each is a straightforward `LinearRegression().fit(X, y)` — no regularization o
 | `/bowler` | Bowler price prediction |
 | `/allrounder` | All-rounder price prediction |
 
-## Running it locally
+## Running it in Virtual Environment
 
 ```bash
+python -m venv venv
+Venv/Scripts/activate
 pip install -r requirements.txt
 python app.py
 ```
