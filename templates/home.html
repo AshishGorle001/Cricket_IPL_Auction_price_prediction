@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPL Auction Predictor | Engine Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* High-Tech Grid Background */
+        body { 
+            background-color: #030712; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center center;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Glassmorphism Navbar */
+        .navbar { 
+            background: rgba(2, 6, 23, 0.8) !important; 
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+        .navbar-brand { letter-spacing: 1px; font-size: 1.3rem; font-weight: 800; color: #f8fafc !important;}
+        .brand-accent { color: #0dcaf0; text-shadow: 0 0 10px rgba(13, 202, 240, 0.5); }
+        .nav-link { color: #94a3b8 !important; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 0.85rem;}
+        .nav-link:hover, .nav-link.active { color: #0dcaf0 !important; text-shadow: 0 0 8px rgba(13, 202, 240, 0.4); }
+
+        /* Dynamic Hero Section */
+        .hero-section {
+            text-align: center;
+            padding: 6vh 20px 4vh;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            background: rgba(13, 202, 240, 0.1);
+            border: 1px solid rgba(13, 202, 240, 0.4);
+            color: #0dcaf0;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            box-shadow: 0 0 15px rgba(13, 202, 240, 0.2);
+            animation: pulse-glow 2s infinite;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fd7e14 0%, #0dcaf0 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            filter: drop-shadow(0 0 20px rgba(13, 202, 240, 0.2));
+        }
+
+        .hero-subtitle {
+            color: #94a3b8;
+            font-size: 1.15rem;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        /* Stats Strip */
+        .stats-strip {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px 30px;
+            text-align: center;
+            margin: 20px auto 50px;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+        .stats-strip .stat-num { font-size: 2.2rem; font-weight: 900; color: #f8fafc; text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);}
+        .stats-strip .stat-lbl { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;}
+
+        /* Modern Glass Cards */
+        .portal-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        /* Hover Physics */
+        .portal-card:hover {
+            transform: translateY(-15px);
+            color: white;
+        }
+        .portal-card:hover .icon-wrapper { transform: scale(1.1) translateY(-5px); }
+
+        /* Themes */
+        .card-batsman:hover { border-color: rgba(253, 126, 20, 0.6); box-shadow: 0 20px 50px rgba(253, 126, 20, 0.2), inset 0 0 20px rgba(253, 126, 20, 0.05); }
+        .card-batsman .icon-wrapper { background: linear-gradient(135deg, rgba(253, 126, 20, 0.2), rgba(211, 84, 0, 0.2)); border: 1px solid rgba(253, 126, 20, 0.5); box-shadow: 0 0 20px rgba(253, 126, 20, 0.3); }
+        .card-batsman .portal-title { color: #fd7e14; }
+        .card-batsman .feature-pill { border-color: rgba(253, 126, 20, 0.3); color: #fd7e14; background: rgba(253, 126, 20, 0.05); }
+
+        .card-bowler:hover { border-color: rgba(16, 185, 129, 0.6); box-shadow: 0 20px 50px rgba(16, 185, 129, 0.2), inset 0 0 20px rgba(16, 185, 129, 0.05); }
+        .card-bowler .icon-wrapper { background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2)); border: 1px solid rgba(16, 185, 129, 0.5); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        .card-bowler .portal-title { color: #34d399; }
+        .card-bowler .feature-pill { border-color: rgba(16, 185, 129, 0.3); color: #34d399; background: rgba(16, 185, 129, 0.05); }
+
+        .card-allrounder:hover { border-color: rgba(13, 202, 240, 0.6); box-shadow: 0 20px 50px rgba(13, 202, 240, 0.2), inset 0 0 20px rgba(13, 202, 240, 0.05); }
+        .card-allrounder .icon-wrapper { background: linear-gradient(135deg, rgba(13, 202, 240, 0.2), rgba(11, 172, 204, 0.2)); border: 1px solid rgba(13, 202, 240, 0.5); box-shadow: 0 0 20px rgba(13, 202, 240, 0.3); }
+        .card-allrounder .portal-title { color: #0dcaf0; }
+        .card-allrounder .feature-pill { border-color: rgba(13, 202, 240, 0.3); color: #0dcaf0; background: rgba(13, 202, 240, 0.05); }
+
+        /* Icon Containers */
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 20px auto;
+            transition: all 0.4s ease;
+        }
+
+        .portal-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .portal-desc {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* Feature Pills */
+        .feature-pill {
+            display: inline-block;
+            border-radius: 50px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            margin: 3px;
+            border: 1px solid;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Faux Buttons inside cards */
+        .enter-btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            width: 90%;
+            margin: 25px auto 0;
+        }
+        
+        .card-batsman:hover .enter-btn { background: #fd7e14; border-color: #fd7e14; color: #000; box-shadow: 0 0 15px rgba(253, 126, 20, 0.4); }
+        .card-bowler:hover .enter-btn { background: #10b981; border-color: #10b981; color: #000; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        .card-allrounder:hover .enter-btn { background: #0dcaf0; border-color: #0dcaf0; color: #000; box-shadow: 0 0 15px rgba(13, 202, 240, 0.4); }
+
+        /* Giant Background Glows */
+        .ambient-glow-orange { position: absolute; width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(253, 126, 20, 0.08) 0%, transparent 60%); top: 10%; left: -10%; z-index: 0; pointer-events: none; }
+        .ambient-glow-green { position: absolute; width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 60%); top: 30%; right: -10%; z-index: 0; pointer-events: none; }
+        .ambient-glow-cyan { position: absolute; width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(13, 202, 240, 0.08) 0%, transparent 60%); bottom: -10%; left: 30%; z-index: 0; pointer-events: none; }
+
+        /* Animations */
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px rgba(13, 202, 240, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(13, 202, 240, 0.5); }
+            100% { box-shadow: 0 0 10px rgba(13, 202, 240, 0.2); }
+        }
+
+        footer { text-align: center; padding: 30px; color: #475569; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 10; position: relative;}
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow-orange"></div>
+    <div class="ambient-glow-green"></div>
+    <div class="ambient-glow-cyan"></div>
+
+    <nav class="navbar navbar-expand-lg py-3">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <span style="color: #64748b;">//</span> AUCTION_ENGINE <span class="brand-accent">v3.0</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto gap-3">
+                    <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/batsman">Batsman</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/bowler">Bowler</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/allrounder">All-Rounder</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container flex-grow-1 d-flex flex-column justify-content-center pb-5">
+        
+        <div class="hero-section">
+            <div class="status-badge">
+                <span style="display:inline-block; width:8px; height:8px; background:#0dcaf0; border-radius:50%; margin-right:6px;"></span>
+                Systems Online
+            </div>
+            <h1 class="hero-title">Cricket Auction Predictor</h1>
+            <p class="hero-subtitle">Select a predictive model pipeline below. The engine utilizes multi-variable linear regression to analyze historical performance metrics and compute estimated market valuations.</p>
+        </div>
+
+        <div class="stats-strip">
+            <div class="row">
+                <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="stat-num">3</div>
+                    <div class="stat-lbl">Player Roles</div>
+                </div>
+                <div class="col-4 border-end border-secondary border-opacity-25">
+                    <div class="stat-num" style="color: #0dcaf0; text-shadow: 0 0 15px rgba(13, 202, 240, 0.4);">ML</div>
+                    <div class="stat-lbl">Powered Prediction</div>
+                </div>
+                <div class="col-4">
+                    <div class="stat-num">12+</div>
+                    <div class="stat-lbl">Features Analyzed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center g-4 position-relative">
+            
+            <div class="col-lg-4 col-md-6">
+                <a href="/batsman" class="portal-card card-batsman">
+                    <div>
+                        <div class="icon-wrapper">🏏</div>
+                        <h2 class="portal-title">Batsman</h2>
+                        <p class="portal-desc">Predict auction price based on core batting performance metrics and career history.</p>
+                        <div class="mt-3">
+                            <span class="feature-pill">Runs</span>
+                            <span class="feature-pill">Average</span>
+                            <span class="feature-pill">Strike Rate</span>
+                            <span class="feature-pill">Centuries</span>
+                            <span class="feature-pill">Exp</span>
+                        </div>
+                    </div>
+                    <div class="enter-btn">Initialize Module</div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <a href="/bowler" class="portal-card card-bowler">
+                    <div>
+                        <div class="icon-wrapper">🎯</div>
+                        <h2 class="portal-title">Bowler</h2>
+                        <p class="portal-desc">Predict auction price based on bowling efficiency, wicket-taking ability, and economy.</p>
+                        <div class="mt-3">
+                            <span class="feature-pill">Wickets</span>
+                            <span class="feature-pill">Economy</span>
+                            <span class="feature-pill">Average</span>
+                            <span class="feature-pill">Strike Rate</span>
+                            <span class="feature-pill">Exp</span>
+                        </div>
+                    </div>
+                    <div class="enter-btn">Initialize Module</div>
+                </a>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <a href="/allrounder" class="portal-card card-allrounder">
+                    <div>
+                        <div class="icon-wrapper">⚡</div>
+                        <h2 class="portal-title">All-Rounder</h2>
+                        <p class="portal-desc">Predict auction price using combined batting AND bowling stats for complex valuation.</p>
+                        <div class="mt-3">
+                            <span class="feature-pill">Runs & Wickets</span>
+                            <span class="feature-pill">Bat SR</span>
+                            <span class="feature-pill">Bowl Econ</span>
+                            <span class="feature-pill">Fifties</span>
+                        </div>
+                    </div>
+                    <div class="enter-btn">Initialize Module</div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>// IPL AUCTION PREDICTOR &nbsp;|&nbsp; MACHINE LEARNING PROJECT</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
